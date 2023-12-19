@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -24,6 +26,19 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://prod/\""
+            )
+        }
+
+        debug {
+            buildConfigField(
+                "String",
+                "BASE_URL",
+                "\"https://test/\""
+            )
         }
     }
     compileOptions {
@@ -36,6 +51,11 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
+    }
+
+    kapt {
+        correctErrorTypes= true
     }
 }
 
@@ -49,8 +69,19 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    implementation ("com.google.android.gms:play-services-auth:20.7.0")
-    implementation ("com.google.android.gms:play-services-auth-api-phone:18.0.1")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")
 
-    implementation ("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("androidx.fragment:fragment-ktx:1.6.2")
+
+    implementation("com.google.dagger:hilt-android:2.48")
+    kapt("com.google.dagger:hilt-compiler:2.48")
+
+    //    retrofit
+    //noinspection GradleDependency
+    implementation("com.squareup.retrofit2:retrofit:2.6.4")
+    implementation("com.squareup.retrofit2:converter-gson:2.7.1")
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("com.squareup.retrofit2:adapter-rxjava2:2.7.1")
 }

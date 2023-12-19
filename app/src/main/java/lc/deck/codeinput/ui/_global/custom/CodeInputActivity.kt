@@ -6,12 +6,14 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import dagger.hilt.android.AndroidEntryPoint
 import lc.deck.codeinput.broadcast_receiver.SmsCodeReceiver
 import lc.deck.codeinput.databinding.ActivityMainBinding
 
 /**
  * Экран ввода кода подтверждения
  */
+@AndroidEntryPoint
 class CodeInputActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

@@ -6,6 +6,8 @@ import android.content.Intent
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
+import lc.deck.codeinput.ui._global.utils.parcelable
+import lc.deck.codeinput.ui._global.utils.serializable
 import java.util.regex.Pattern
 
 
@@ -23,11 +25,11 @@ class SmsCodeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == SmsRetriever.SMS_RETRIEVED_ACTION) {
             val extras = intent.extras
-            val status: Status? = extras!![SmsRetriever.EXTRA_STATUS] as Status?
+            val status: Status? = extras?.parcelable(SmsRetriever.EXTRA_STATUS)
 
             when (status?.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
-                    val sms = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String?
+                    val sms: String? = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
                     sms?.let {
                         val p = Pattern.compile("\\d+")
                         val m = p.matcher(it)
