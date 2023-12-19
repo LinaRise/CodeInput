@@ -8,4 +8,5 @@
     <color name="code_edit_text_bottom_line">#333333</color>
     <color name="gray_500">#9FA0A7</color>
     <color name="red">#FF4728</color>
+    <color name="loader_background">#BF000000</color>
 </resources>

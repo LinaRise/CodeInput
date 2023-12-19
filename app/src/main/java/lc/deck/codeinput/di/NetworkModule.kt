@@ -25,12 +25,22 @@ class NetworkModule {
             connectTimeout(15, TimeUnit.SECONDS)
             readTimeout(15, TimeUnit.SECONDS)
             writeTimeout(15, TimeUnit.SECONDS)
+        }
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        okHttpClientBuilder: OkHttpClient.Builder,
+        gson: Gson,
+    ): OkHttpClient =
+        with(okHttpClientBuilder) {
             if (BuildConfig.DEBUG) {
                 val httpLogger = HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 }
                 addNetworkInterceptor(httpLogger)
             }
+            build()
         }
 
     @Provides

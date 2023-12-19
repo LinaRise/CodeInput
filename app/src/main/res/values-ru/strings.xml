@@ -2,4 +2,5 @@
 <resources>
     <string name="app_name">CodeInput</string>
     <string name="enter_code_from_sms">Введите код, полученный из SMS</string>
+    <string name="send_code_again_in">Отправить код повторно через</string>
 </resources>

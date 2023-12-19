@@ -6,6 +6,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import lc.deck.codeinput.system.schedulers.AppSchedulers
+import lc.deck.codeinput.system.schedulers.SchedulersProvider
 import java.util.Date
 import javax.inject.Singleton
 
@@ -20,5 +22,9 @@ abstract class AppModule {
             serializeNulls()
             create()
         }
+
+        @Provides
+        @Singleton
+        fun provideSchedulers(): SchedulersProvider = AppSchedulers()
     }
 }

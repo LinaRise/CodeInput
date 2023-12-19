@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -55,7 +56,7 @@ android {
     }
 
     kapt {
-        correctErrorTypes= true
+        correctErrorTypes = true
     }
 }
 
@@ -77,11 +78,18 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-compiler:2.48")
 
-    //    retrofit
-    //noinspection GradleDependency
+    //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.6.4")
     implementation("com.squareup.retrofit2:converter-gson:2.7.1")
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("com.squareup.retrofit2:adapter-rxjava2:2.7.1")
+
+    //rx
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.11")
+    implementation("com.jakewharton.rxrelay2:rxrelay:2.1.1")
+
+    // animation
+    implementation("com.airbnb.android:lottie:3.5.0")
 }
