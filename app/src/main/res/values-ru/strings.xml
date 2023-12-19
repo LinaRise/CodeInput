@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CodeInput</string>
+    <string name="enter_code_from_sms">Введите код, полученный из SMS</string>
+</resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="toolbarStyle">
+        <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">23sp</item>
+        <item name="lineHeight">23sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Header1">
+        <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">28sp</item>
+        <item name="lineHeight">33sp</item>
+        <item name="android:gravity">start</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Caption1">
+        <item name="android:textColor">@color/gray_500</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="lineHeight">16sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:lineSpacingExtra">2sp</item>
+        <item name="android:translationY">-0.97sp</item>
+    </style>
+
+    <style name="Caption2">
+        <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="lineHeight">18sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:lineSpacingExtra">2sp</item>
+        <item name="android:translationY">-1.24sp</item>
+    </style>
+</resources>

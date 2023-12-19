@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CodeEditText">
+        <attr name="android:inputType" />
+        <attr name="android:maxLength" />
+        <attr name="android:text" />
+        <attr name="et_codeMaskChar" format="string" />
+        <attr name="et_codePlaceholder" format="string" />
+        <attr name="et_maskTheCode" format="boolean" />
+        <attr name="et_scrollDurationInMillis" format="integer" />
+    </declare-styleable>
+
+</resources>
