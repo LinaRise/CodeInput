@@ -47,6 +47,7 @@ class OtpConfirmViewModel @Inject constructor(
                     _codeRequest.accept(true)
                 },
                 { e ->
+                    _codeRequest.accept(true)
                     _errorMessage.accept(UiText.DynamicString(e.message ?: ""))
                 }
             ).connect()

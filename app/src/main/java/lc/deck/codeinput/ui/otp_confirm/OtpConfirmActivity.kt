@@ -5,6 +5,7 @@ import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.gms.auth.api.phone.SmsRetriever
@@ -27,6 +28,8 @@ class OtpConfirmActivity : BaseActivity() {
     private lateinit var smsCodeReceiver: SmsCodeReceiver
     private lateinit var intentFilter: IntentFilter
     private var countDownTimer: CountDownTimer? = null
+    private var mTimeLeftInMillis = RESEND_CODE_DELAY_IN_MILLIS
+    private val mEndTime: Long = 0
 
     private val viewModel: OtpConfirmViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,10 +59,11 @@ class OtpConfirmActivity : BaseActivity() {
 
             codeRequest.subscribe {
                 binding.apply {
-                    binding.tvRemainingTime.visible(true)
+                    binding.linearTimer.visible(true)
+                    binding.tvResend.visible(false)
                     tvResend.text = getString(R.string.send_code_again_in)
                 }
-                setCountDownTimer(RESEND_CODE_DELAY_IN_MILLIS)
+                setCountDownTimer(RESEND_CODE_DELAY)
                 countDownTimer?.start()
             }.disposeOnStop()
 
@@ -84,6 +88,19 @@ class OtpConfirmActivity : BaseActivity() {
         unregisterReceiver(smsCodeReceiver)
     }
 
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putLong(ARG_MILLIS_LEFT, mTimeLeftInMillis)
+    }
+
+    override fun onRestoreInstanceState(
+        savedInstanceState: Bundle?,
+        persistentState: PersistableBundle?
+    ) {
+        super.onRestoreInstanceState(savedInstanceState, persistentState)
+        mTimeLeftInMillis = savedInstanceState?.getLong(ARG_MILLIS_LEFT) ?: 0
+    }
+
     private fun setCountDownTimer(timeInSeconds: Int) {
         countDownTimer =
             object : CountDownTimer(
@@ -91,6 +108,7 @@ class OtpConfirmActivity : BaseActivity() {
                 ONE_SECOND_IN_MILLISECONDS
             ) {
                 override fun onTick(millisUntilFinished: Long) {
+                    mTimeLeftInMillis = millisUntilFinished
                     binding.apply {
                         tvRemainingTime.text = String.format(
                             "%d:%02d", TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
@@ -109,7 +127,8 @@ class OtpConfirmActivity : BaseActivity() {
                 }
 
                 private fun timerStop() {
-                    binding.tvRemainingTime.visible(false)
+                    binding.linearTimer.visible(false)
+                    binding.tvResend.visible(true)
                     viewModel.isCountDownRunning = false
                 }
             }
@@ -167,7 +186,9 @@ class OtpConfirmActivity : BaseActivity() {
     }
 
     companion object {
-        private const val RESEND_CODE_DELAY_IN_MILLIS = 60_000
+        private const val ARG_MILLIS_LEFT = "millisLeft"
+        private const val RESEND_CODE_DELAY = 60
+        private const val RESEND_CODE_DELAY_IN_MILLIS = 60_000L
         private const val ONE_SECOND_IN_MILLISECONDS = 1_000L
     }
 
