@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import lc.deck.codeinput.R
 import lc.deck.codeinput.databinding.CustomInputFieldLayoutBinding
 
@@ -256,5 +257,31 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
 
     private fun CharSequence.toEditable(): Editable =
         Editable.Factory.getInstance().newEditable(this)
+
+    fun setErrorMode(isErrorMode: Boolean = false) {
+        binding.apply {
+            for (i in 0 until llCode.childCount) {
+                val itemContainer = llCode.getChildAt(i)
+
+                if (isErrorMode) {
+                    itemContainer.findViewById<TextView>(R.id.tvCode).setTextColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.red)
+                    )
+
+                    itemContainer.findViewById<View>(R.id.underline).setBackgroundColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.red)
+                    )
+                } else {
+                    itemContainer.findViewById<TextView>(R.id.tvCode).setTextColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.black)
+                    )
+
+                    itemContainer.findViewById<View>(R.id.underline).setBackgroundColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.black)
+                    )
+                }
+            }
+        }
+    }
 
 }

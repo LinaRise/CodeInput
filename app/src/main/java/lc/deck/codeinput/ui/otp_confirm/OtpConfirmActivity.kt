@@ -38,6 +38,9 @@ class OtpConfirmActivity : BaseActivity() {
             otpArea.setOnCodeChangedListener {
                 if (otpArea.text.length == otpArea.maxLength)
                     viewModel.sendOtpCode(otpArea.text.toString())
+                else if (otpArea.text.length == otpArea.maxLength - 1)
+                    viewModel.setSmsFieldsViewNormal()
+
             }
         }
         initSmsListener()
@@ -61,7 +64,17 @@ class OtpConfirmActivity : BaseActivity() {
             }.disposeOnStop()
 
             errorMessage.subscribe { errorText ->
-                Toast.makeText(this@OtpConfirmActivity, errorText, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@OtpConfirmActivity,
+                    errorText.asString(this@OtpConfirmActivity),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }.disposeOnStop()
+
+            otpFieldsError.subscribe { (message, isVisible) ->
+                binding.tvErrorMessage.visible(isVisible)
+                binding.tvErrorMessage.text = message.asString(this@OtpConfirmActivity)
+                binding.otpArea.setErrorMode(isVisible)
             }.disposeOnStop()
         }
     }
