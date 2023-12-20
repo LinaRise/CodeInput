@@ -4,8 +4,6 @@ import android.animation.ValueAnimator
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import com.google.android.gms.auth.api.phone.SmsRetriever
@@ -14,8 +12,9 @@ import lc.deck.codeinput.R
 import lc.deck.codeinput.broadcast_receiver.SmsCodeReceiver
 import lc.deck.codeinput.databinding.ActivityMainBinding
 import lc.deck.codeinput.ui._global.base.BaseActivity
+import lc.deck.codeinput.ui._global.utils.hideKeyboard
+import lc.deck.codeinput.ui._global.utils.setupClickListener
 import lc.deck.codeinput.ui._global.utils.visible
-import java.util.concurrent.TimeUnit
 
 /**
  * Экран ввода кода подтверждения
@@ -27,9 +26,6 @@ class OtpConfirmActivity : BaseActivity() {
 
     private lateinit var smsCodeReceiver: SmsCodeReceiver
     private lateinit var intentFilter: IntentFilter
-    private var countDownTimer: CountDownTimer? = null
-    private var mTimeLeftInMillis = RESEND_CODE_DELAY_IN_MILLIS
-    private val mEndTime: Long = 0
 
     private val viewModel: OtpConfirmViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +34,17 @@ class OtpConfirmActivity : BaseActivity() {
         val view = binding.root
         setContentView(view)
         binding.apply {
+            otpArea.text = viewModel.getTypedOtp()
             otpArea.setOnCodeChangedListener {
-                if (otpArea.text.length == otpArea.maxLength)
+                viewModel.setTypedOtp(otpArea.text.toString())
+                if (otpArea.text.length == otpArea.maxLength) {
+                    hideKeyboard()
                     viewModel.sendOtpCode(otpArea.text.toString())
-                else if (otpArea.text.length == otpArea.maxLength - 1)
+                } else if (otpArea.text.length == otpArea.maxLength - 1)
                     viewModel.setSmsFieldsViewNormal()
-
+            }
+            tvResend.setupClickListener {
+                viewModel.requestSmsCode()
             }
         }
         initSmsListener()
@@ -58,13 +59,21 @@ class OtpConfirmActivity : BaseActivity() {
             }.disposeOnStop()
 
             codeRequest.subscribe {
-                binding.apply {
-                    binding.linearTimer.visible(true)
-                    binding.tvResend.visible(false)
-                    tvResend.text = getString(R.string.send_code_again_in)
+                viewModel.startTimer()
+            }.disposeOnStop()
+
+            timer.subscribe { (isCountDownRunning, timeValue) ->
+                if (isCountDownRunning) {
+                    binding.apply {
+                        binding.linearTimer.visible(true)
+                        binding.tvResend.visible(false)
+                        binding.tvTimer.text = getString(R.string.send_code_again_in)
+                        binding.tvRemainingTime.text = timeValue
+                    }
+                } else {
+                    binding.linearTimer.visible(false)
+                    binding.tvResend.visible(true)
                 }
-                setCountDownTimer(RESEND_CODE_DELAY)
-                countDownTimer?.start()
             }.disposeOnStop()
 
             errorMessage.subscribe { errorText ->
@@ -86,52 +95,6 @@ class OtpConfirmActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         unregisterReceiver(smsCodeReceiver)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        outState.putLong(ARG_MILLIS_LEFT, mTimeLeftInMillis)
-    }
-
-    override fun onRestoreInstanceState(
-        savedInstanceState: Bundle?,
-        persistentState: PersistableBundle?
-    ) {
-        super.onRestoreInstanceState(savedInstanceState, persistentState)
-        mTimeLeftInMillis = savedInstanceState?.getLong(ARG_MILLIS_LEFT) ?: 0
-    }
-
-    private fun setCountDownTimer(timeInSeconds: Int) {
-        countDownTimer =
-            object : CountDownTimer(
-                timeInSeconds.times(ONE_SECOND_IN_MILLISECONDS),
-                ONE_SECOND_IN_MILLISECONDS
-            ) {
-                override fun onTick(millisUntilFinished: Long) {
-                    mTimeLeftInMillis = millisUntilFinished
-                    binding.apply {
-                        tvRemainingTime.text = String.format(
-                            "%d:%02d", TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished),
-                            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) -
-                                    TimeUnit.MINUTES.toSeconds(
-                                        TimeUnit.MILLISECONDS.toMinutes(
-                                            millisUntilFinished
-                                        )
-                                    )
-                        )
-                    }
-                }
-
-                override fun onFinish() {
-                    timerStop()
-                }
-
-                private fun timerStop() {
-                    binding.linearTimer.visible(false)
-                    binding.tvResend.visible(true)
-                    viewModel.isCountDownRunning = false
-                }
-            }
     }
 
     /**
@@ -183,13 +146,6 @@ class OtpConfirmActivity : BaseActivity() {
                 progressBar.pauseAnimation()
             }
         }
-    }
-
-    companion object {
-        private const val ARG_MILLIS_LEFT = "millisLeft"
-        private const val RESEND_CODE_DELAY = 60
-        private const val RESEND_CODE_DELAY_IN_MILLIS = 60_000L
-        private const val ONE_SECOND_IN_MILLISECONDS = 1_000L
     }
 
 }
