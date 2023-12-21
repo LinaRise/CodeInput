@@ -90,6 +90,19 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
             else value
             this.editable = cropped.toEditable()
             binding.etCode.setText(cropped)
+            setErrorMode(isError)
+        }
+
+    private var isError: Boolean = false
+        set(value) {
+            field = value
+        }
+
+    var errorValue: Boolean
+        get() = isError
+        set(value) {
+            this.isError = value
+            setErrorMode(value)
         }
 
     init {

@@ -23,7 +23,7 @@ class OtpConfirmViewModel @Inject constructor(
     private val _successVerification = PublishRelay.create<Boolean>()
     val successVerification: Observable<Boolean> = _successVerification.hide()
 
-    private val _timer = PublishRelay.create<Pair<Boolean, String>>()
+    private val _timer = BehaviorRelay.create<Pair<Boolean, String>>()
     val timer: Observable<Pair<Boolean, String>> = _timer.hide()
 
     private val _loading = BehaviorRelay.create<Boolean>()
@@ -42,6 +42,7 @@ class OtpConfirmViewModel @Inject constructor(
 
     private var otpValue = ""
     private var previousOtpValue = otpValue
+    private var sendOtpValue = ""
 
     init {
         // за отсутствием запроса для первичной отправки кода,
@@ -70,7 +71,8 @@ class OtpConfirmViewModel @Inject constructor(
      * Отправка введенного кода
      */
     fun sendOtpCode(otp: String) {
-        if (previousOtpValue != otpValue)
+        if (previousOtpValue != otpValue) {
+            sendOtpValue = otpValue
             repository.sendOtpCode(otp)
                 .doOnSubscribe { _loading.accept(true) }
                 .doFinally { _loading.accept(false) }
@@ -93,6 +95,7 @@ class OtpConfirmViewModel @Inject constructor(
                         )
                     }
                 ).connect()
+        }
     }
 
     /**

@@ -25,8 +25,8 @@ class OtpConfirmActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var smsCodeReceiver: SmsCodeReceiver
-    private lateinit var intentFilter: IntentFilter
+    private var intentFilter: IntentFilter? = null
+    private var smsCodeReceiver: SmsCodeReceiver? = null
 
     private val viewModel: OtpConfirmViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +41,8 @@ class OtpConfirmActivity : BaseActivity() {
                 if (otpArea.text.length == otpArea.maxLength) {
                     hideKeyboard()
                     viewModel.sendOtpCode(otpArea.text.toString())
-                } else if (otpArea.text.length == otpArea.maxLength - 1) {
+                    otpArea.errorValue = otpArea.errorValue
+                } else if (otpArea.text.length != otpArea.maxLength - 1) {
                     viewModel.setSmsFieldsViewNormal()
                 }
             }
@@ -98,15 +99,25 @@ class OtpConfirmActivity : BaseActivity() {
             otpFieldsError.subscribe { (message, isVisible) ->
                 binding.tvErrorMessage.visible(isVisible)
                 binding.tvErrorMessage.text = message.asString(this@OtpConfirmActivity)
-                binding.otpArea.setErrorMode(isVisible)
+                binding.otpArea.errorValue = isVisible
             }.disposeOnStop()
 
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        registerSmsCodeReceiver()
+    }
+
     override fun onPause() {
         super.onPause()
         unregisterReceiver(smsCodeReceiver)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        smsCodeReceiver = null
     }
 
     /**
@@ -115,7 +126,7 @@ class OtpConfirmActivity : BaseActivity() {
     private fun initSmsBroadcastReceiver() {
         intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         smsCodeReceiver = SmsCodeReceiver()
-        smsCodeReceiver.setCodeListener(object : SmsCodeReceiver.CodeReceivedListener {
+        smsCodeReceiver?.setCodeListener(object : SmsCodeReceiver.CodeReceivedListener {
             override fun setReceivedCode(code: String) {
                 binding.otpArea.text = code
             }
@@ -130,11 +141,6 @@ class OtpConfirmActivity : BaseActivity() {
     private fun initSmsListener() {
         val client = SmsRetriever.getClient(this)
         client.startSmsRetriever()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        registerSmsCodeReceiver()
     }
 
     /**
