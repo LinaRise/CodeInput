@@ -16,6 +16,5 @@
  - Быть не длиннее 140 байт.
  - Содержать одноразовый код, который клиент отправляет обратно на ваш сервер для завершения процесса проверки.
  - Добавить 11-значную хеш-строку, которая идентифицирует ваше приложение (см. Вычисление хеш-строки вашего приложения ). Получить хеш-строку своего приложения с помощью класса AppSignatureHelper.Нужно обязательно удалить его из своего приложения после получения хэш-строки и/или релизе
- - [Подбробнее]([https://github.com/user/repo/blob/branch/other_file.md](https://developers.google.com/identity/sms-retriever/overview?hl=ru)https://developers.google.com/identity/sms-retriever/overview?hl=ru) 
+ - [Подбробнее](https://github.com/user/repo/blob/branch/other_file.md](https://developers.google.com/identity/sms-retriever/overview?hl=ru)https://developers.google.com/identity/sms-retriever/overview?hl=ru) 
 
- - 
