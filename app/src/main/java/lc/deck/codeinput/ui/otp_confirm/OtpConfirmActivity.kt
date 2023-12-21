@@ -16,6 +16,7 @@ import lc.deck.codeinput.ui._global.utils.hideKeyboard
 import lc.deck.codeinput.ui._global.utils.setupClickListener
 import lc.deck.codeinput.ui._global.utils.visible
 
+
 /**
  * Экран ввода кода подтверждения
  */
@@ -40,8 +41,9 @@ class OtpConfirmActivity : BaseActivity() {
                 if (otpArea.text.length == otpArea.maxLength) {
                     hideKeyboard()
                     viewModel.sendOtpCode(otpArea.text.toString())
-                } else if (otpArea.text.length == otpArea.maxLength - 1)
+                } else if (otpArea.text.length == otpArea.maxLength - 1) {
                     viewModel.setSmsFieldsViewNormal()
+                }
             }
             tvResend.setupClickListener {
                 viewModel.requestSmsCode()
@@ -56,6 +58,15 @@ class OtpConfirmActivity : BaseActivity() {
         viewModel.apply {
             loading.subscribe {
                 renderLoading(it)
+            }.disposeOnStop()
+
+            successVerification.subscribe {
+                viewModel.cancelCountDown()
+                Toast.makeText(
+                    this@OtpConfirmActivity,
+                    "Переход на другой экран",
+                    Toast.LENGTH_LONG
+                ).show()
             }.disposeOnStop()
 
             codeRequest.subscribe {
@@ -89,6 +100,7 @@ class OtpConfirmActivity : BaseActivity() {
                 binding.tvErrorMessage.text = message.asString(this@OtpConfirmActivity)
                 binding.otpArea.setErrorMode(isVisible)
             }.disposeOnStop()
+
         }
     }
 
@@ -105,13 +117,15 @@ class OtpConfirmActivity : BaseActivity() {
         smsCodeReceiver = SmsCodeReceiver()
         smsCodeReceiver.setCodeListener(object : SmsCodeReceiver.CodeReceivedListener {
             override fun setReceivedCode(code: String) {
-
+                binding.otpArea.text = code
             }
         })
     }
 
     /**
      * Начало прослушивания получения sms
+     * Прослушивает sms содержащее уникальную строку,
+     * идентифицирующую ваше приложение в течение 5 минут
      */
     private fun initSmsListener() {
         val client = SmsRetriever.getClient(this)

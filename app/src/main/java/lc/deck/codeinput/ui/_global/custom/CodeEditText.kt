@@ -10,14 +10,17 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import lc.deck.codeinput.R
 import lc.deck.codeinput.databinding.CustomInputFieldLayoutBinding
+import lc.deck.codeinput.ui._global.utils.showKeyboard
 
+/**
+ * View ввод otp
+ */
 class CodeEditText constructor(context: Context, attrs: AttributeSet) :
     FrameLayout(context, attrs) {
 
@@ -243,13 +246,6 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
             interpolator = DecelerateInterpolator()
             duration = scrollDurationInMillis.toLong()
             start()
-        }
-    }
-
-    private fun View.showKeyboard() {
-        requestFocus()
-        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager)?.also {
-            it.showSoftInput(this, InputMethodManager.HIDE_IMPLICIT_ONLY)
         }
     }
 

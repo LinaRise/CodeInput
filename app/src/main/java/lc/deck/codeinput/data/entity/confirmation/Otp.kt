@@ -1,12 +1,11 @@
 package lc.deck.codeinput.data.entity.confirmation
 
-import android.os.Parcelable
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 
-@Parcelize
+@Serializable
 data class Otp(
-    @SerializedName("code")
+    @SerialName("code")
     val code: String
-) : Parcelable
+)

@@ -20,6 +20,9 @@ class OtpConfirmViewModel @Inject constructor(
     private val _codeRequest = PublishRelay.create<Boolean>()
     val codeRequest: Observable<Boolean> = _codeRequest.hide()
 
+    private val _successVerification = PublishRelay.create<Boolean>()
+    val successVerification: Observable<Boolean> = _successVerification.hide()
+
     private val _timer = PublishRelay.create<Pair<Boolean, String>>()
     val timer: Observable<Pair<Boolean, String>> = _timer.hide()
 
@@ -29,7 +32,8 @@ class OtpConfirmViewModel @Inject constructor(
     private val _errorMessage = PublishRelay.create<UiText>()
     val errorMessage: Observable<UiText> = _errorMessage.hide()
 
-    private val _otpFieldsError = BehaviorRelay.create<Pair<UiText, Boolean>>()
+    private val _otpFieldsError =
+        BehaviorRelay.createDefault(Pair(UiText.DynamicString("") as UiText, false))
     val otpFieldsError: Observable<Pair<UiText, Boolean>> = _otpFieldsError.hide()
 
     var isCountDownRunning = false
@@ -37,6 +41,7 @@ class OtpConfirmViewModel @Inject constructor(
     private var countDownTimer: CountDownTimer? = null
 
     private var otpValue = ""
+    private var previousOtpValue = otpValue
 
     init {
         // за отсутствием запроса для первичной отправки кода,
@@ -56,7 +61,6 @@ class OtpConfirmViewModel @Inject constructor(
                     _codeRequest.accept(true)
                 },
                 { e ->
-                    _codeRequest.accept(true)
                     _errorMessage.accept(UiText.DynamicString(e.message ?: ""))
                 }
             ).connect()
@@ -66,28 +70,29 @@ class OtpConfirmViewModel @Inject constructor(
      * Отправка введенного кода
      */
     fun sendOtpCode(otp: String) {
-        repository.sendOtpCode(otp)
-            .doOnSubscribe { _loading.accept(true) }
-            .doFinally { _loading.accept(false) }
-            .subscribe(
-                {
-                    _codeRequest.accept(true)
-                },
-                { e ->
-                    //преполагается, что ошибка неверного кода
-                    // будет показываться на опредленный код ошибки,
-                    // а на остальные показывать стандартным обработчиком _errorMessage
-                    // - например показ toast  _errorMessage.accept(UiText.DynamicString(e.message ?: ""))
-                    // тут мы этим пренебрегаем так как методы абстркатные и
-                    // будем на все ошибки реагировать как на неверный код
-                    _otpFieldsError.accept(
-                        Pair(
-                            UiText.StringResource(R.string.wrong_code_check_input_data),
-                            true
+        if (previousOtpValue != otpValue)
+            repository.sendOtpCode(otp)
+                .doOnSubscribe { _loading.accept(true) }
+                .doFinally { _loading.accept(false) }
+                .subscribe(
+                    {
+                        _successVerification.accept(true)
+                    },
+                    { e ->
+                        //преполагается, что ошибка неверного кода
+                        // будет показываться на опредленный код ошибки,
+                        // а на остальные показывать стандартным обработчиком _errorMessage
+                        // - например показ toast  _errorMessage.accept(UiText.DynamicString(e.message ?: ""))
+                        // тут мы этим пренебрегаем так как методы абстркатные и
+                        // будем на все ошибки реагировать как на неверный код
+                        _otpFieldsError.accept(
+                            Pair(
+                                UiText.StringResource(R.string.wrong_code_check_input_data),
+                                true
+                            )
                         )
-                    )
-                }
-            ).connect()
+                    }
+                ).connect()
     }
 
     /**
@@ -128,15 +133,16 @@ class OtpConfirmViewModel @Inject constructor(
                     timerStop()
                 }
 
-                private fun timerStop() {
-                    _timer.accept(
-                        Pair(
-                            false, ""
-                        )
-                    )
-                    isCountDownRunning = false
-                }
             }
+    }
+
+    private fun timerStop() {
+        _timer.accept(
+            Pair(
+                false, ""
+            )
+        )
+        isCountDownRunning = false
     }
 
     fun startTimer() {
@@ -148,10 +154,19 @@ class OtpConfirmViewModel @Inject constructor(
     }
 
     fun setTypedOtp(otp: String) {
+        previousOtpValue = otpValue
         otpValue = otp
     }
 
     fun getTypedOtp() = otpValue
+
+    /**
+     * Отмена таймера
+     */
+    fun cancelCountDown() {
+        countDownTimer?.cancel()
+        timerStop()
+    }
 
     companion object {
         private const val RESEND_CODE_DELAY_IN_MILLIS = 60_000L

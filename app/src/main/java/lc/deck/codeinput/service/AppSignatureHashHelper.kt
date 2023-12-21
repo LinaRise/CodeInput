@@ -11,6 +11,9 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.Arrays
 
+/**
+ * Всопомогательный класс для генерации хеш-строки приложения
+ */
 class AppSignatureHashHelper(context: Context?) :
     ContextWrapper(context) {// Get all package details
 

@@ -1,24 +1,24 @@
 package lc.deck.codeinput.ui._global.entity
 
 import android.content.Context
-import android.os.Parcelable
 import androidx.annotation.StringRes
-import com.google.gson.annotations.SerializedName
-import kotlinx.parcelize.Parcelize
-import kotlinx.parcelize.RawValue
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-sealed class UiText: Parcelable {
-    @Parcelize
-    data class DynamicString(@SerializedName("value") val value: String): UiText(), Parcelable
-    @Parcelize
+sealed class UiText {
+    @Serializable
+    data class DynamicString(@SerialName("value") val value: String) : UiText()
+
+    @Serializable
     class StringResource(
-        @SerializedName("resId")
+        @SerialName("resId")
         @StringRes val resId: Int,
-        vararg val args: @RawValue Any
-    ): UiText(), Parcelable
+        vararg val args: @Contextual Any
+    ) : UiText()
 
     fun asString(context: Context): String {
-        return when(this) {
+        return when (this) {
             is DynamicString -> value
             is StringResource -> context.getString(resId, *args)
         }
