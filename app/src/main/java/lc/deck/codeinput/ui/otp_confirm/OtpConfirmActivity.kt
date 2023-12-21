@@ -37,13 +37,13 @@ class OtpConfirmActivity : BaseActivity() {
         binding.apply {
             otpArea.text = viewModel.getTypedOtp()
             otpArea.setOnCodeChangedListener {
-                viewModel.setTypedOtp(otpArea.text.toString())
-                if (otpArea.text.length == otpArea.maxLength) {
+                viewModel.setTypedOtp(otpArea.text)
+                if (otpArea.text.first.length == otpArea.maxLength) {
                     hideKeyboard()
-                    viewModel.sendOtpCode(otpArea.text.toString())
-                } else if (otpArea.text.length == otpArea.maxLength - 1) {
+                    viewModel.sendOtpCode(otpArea.text.first.toString())
+                } /*else if (otpArea.text.first.length == otpArea.maxLength - 1) {
                     viewModel.setSmsFieldsViewNormal()
-                }
+                }*/
             }
             tvResend.setupClickListener {
                 viewModel.requestSmsCode()
@@ -98,7 +98,7 @@ class OtpConfirmActivity : BaseActivity() {
             otpFieldsError.subscribe { (message, isVisible) ->
                 binding.tvErrorMessage.visible(isVisible)
                 binding.tvErrorMessage.text = message.asString(this@OtpConfirmActivity)
-                binding.otpArea.setErrorMode(isVisible)
+                binding.otpArea.text = Pair(viewModel.getTypedOtp().first, isVisible)
             }.disposeOnStop()
 
         }
@@ -117,7 +117,7 @@ class OtpConfirmActivity : BaseActivity() {
         smsCodeReceiver = SmsCodeReceiver()
         smsCodeReceiver.setCodeListener(object : SmsCodeReceiver.CodeReceivedListener {
             override fun setReceivedCode(code: String) {
-                binding.otpArea.text = code
+                binding.otpArea.text = Pair(code, false)
             }
         })
     }

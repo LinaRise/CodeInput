@@ -72,7 +72,7 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
     private var rememberToRenderCode = false
     private var xAnimator: ObjectAnimator? = null
     private var yAnimator: ObjectAnimator? = null
-    private var editable: Editable = "".toEditable()
+    private var editable: Pair<CharSequence, Boolean> = Pair("".toEditable(), false)
         set(value) {
             field = value
             if (initEnded) renderCode()
@@ -83,12 +83,12 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
         this.onCodeChangedListener = listener
     }
 
-    var text: CharSequence
+    var text: Pair<CharSequence, Boolean>
         get() = this.editable
         set(value) {
-            val cropped = if (value.length > maxLength) value.subSequence(0, maxLength)
-            else value
-            this.editable = cropped.toEditable()
+            val cropped = if (value.first.length > maxLength) value.first.subSequence(0, maxLength)
+            else value.first
+            this.editable = Pair(cropped.toEditable(), value.second)
             binding.etCode.setText(cropped)
         }
 
@@ -134,7 +134,7 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
             attributes.getString(R.styleable.CodeEditText_android_text)?.also { value ->
                 val cropped = if (value.length > maxLength) value.subSequence(0, maxLength)
                 else value
-                this.editable = cropped.toEditable()
+                this.editable = Pair(cropped.toEditable(), false)
             }
 
         } finally {
@@ -156,7 +156,7 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
                 )
             }
 
-            if (editable.isNotEmpty()) etCode.text = editable
+            if (editable.first.isNotEmpty()) etCode.text = editable.first.toEditable()
             etCode.filters = arrayOf<InputFilter>(InputFilter.LengthFilter(maxLength))
             etCode.removeTextChangedListener(textChangedListener)
             etCode.addTextChangedListener(textChangedListener)
@@ -181,7 +181,7 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
         override fun afterTextChanged(s: Editable) {
-            editable = s
+            editable = Pair(s, editable.second)
         }
     }
 
@@ -191,22 +191,46 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
                 val itemContainer = llCode.getChildAt(i)
 
                 itemContainer.findViewById<TextView>(R.id.tvCode).text =
-                    if (editable.length > i)
-                        (if (maskTheCode) codeMaskChar else editable[i]).toString()
+                    if (editable.first.length > i)
+                        (if (maskTheCode) codeMaskChar else editable.first[i]).toString()
                     else codePlaceholder.toString()
 
-                if (i == editable.length - 1 && !itemContainer.isFullyVisibleInside(
+                if (i == editable.first.length - 1 && !itemContainer.isFullyVisibleInside(
                         hScrollView
                     )
                 )
                     hScrollView.focusOnView(itemContainer)
             }
         }
+
+        binding.apply {
+            for (i in 0 until llCode.childCount) {
+                val itemContainer = llCode.getChildAt(i)
+
+                if (editable.second) {
+                    itemContainer.findViewById<TextView>(R.id.tvCode).setTextColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.red)
+                    )
+
+                    itemContainer.findViewById<View>(R.id.underline).setBackgroundColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.red)
+                    )
+                } else {
+                    itemContainer.findViewById<TextView>(R.id.tvCode).setTextColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.black)
+                    )
+
+                    itemContainer.findViewById<View>(R.id.underline).setBackgroundColor(
+                        ContextCompat.getColor(this@CodeEditText.context, R.color.black)
+                    )
+                }
+            }
+        }
         notifyCodeChanged()
     }
 
-    private fun notifyCodeChanged(): Boolean = (editable.length == maxLength).apply {
-        onCodeChangedListener?.invoke(Pair(editable.toString(), this))
+    private fun notifyCodeChanged(): Boolean = (editable.first.length == maxLength).apply {
+        onCodeChangedListener?.invoke(Pair(editable.first.toString(), this))
     }
 
     private fun View.isFullyVisibleInside(parentView: View): Boolean {

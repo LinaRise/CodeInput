@@ -32,15 +32,14 @@ class OtpConfirmViewModel @Inject constructor(
     private val _errorMessage = PublishRelay.create<UiText>()
     val errorMessage: Observable<UiText> = _errorMessage.hide()
 
-    private val _otpFieldsError =
-        BehaviorRelay.createDefault(Pair(UiText.DynamicString("") as UiText, false))
+    private val _otpFieldsError = BehaviorRelay.create<Pair<UiText, Boolean>>()
     val otpFieldsError: Observable<Pair<UiText, Boolean>> = _otpFieldsError.hide()
 
     var isCountDownRunning = false
 
     private var countDownTimer: CountDownTimer? = null
 
-    private var otpValue = ""
+    private var otpValue:Pair<CharSequence, Boolean> = Pair("",false)
     private var previousOtpValue = otpValue
 
     init {
@@ -70,13 +69,15 @@ class OtpConfirmViewModel @Inject constructor(
      * Отправка введенного кода
      */
     fun sendOtpCode(otp: String) {
-        if (previousOtpValue != otpValue)
+//        if (previousOtpValue != otpValue) {
+            setSmsFieldsViewNormal()
             repository.sendOtpCode(otp)
                 .doOnSubscribe { _loading.accept(true) }
                 .doFinally { _loading.accept(false) }
                 .subscribe(
                     {
                         _successVerification.accept(true)
+                        setSmsFieldsViewNormal()
                     },
                     { e ->
                         //преполагается, что ошибка неверного кода
@@ -93,6 +94,7 @@ class OtpConfirmViewModel @Inject constructor(
                         )
                     }
                 ).connect()
+//        }
     }
 
     /**
@@ -153,7 +155,7 @@ class OtpConfirmViewModel @Inject constructor(
         isCountDownRunning = true
     }
 
-    fun setTypedOtp(otp: String) {
+    fun setTypedOtp(otp: Pair<CharSequence, Boolean>) {
         previousOtpValue = otpValue
         otpValue = otp
     }
