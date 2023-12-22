@@ -31,7 +31,7 @@ class OtpViewTest {
 
     @Test
     fun `should display empty string by default`() {
-        assertEquals("", otpEditText?.text)
+        assertEquals("", otpEditText?.text.toString())
     }
 
     @Test

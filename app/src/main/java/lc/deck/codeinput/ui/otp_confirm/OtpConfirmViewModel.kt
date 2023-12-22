@@ -36,7 +36,7 @@ class OtpConfirmViewModel @Inject constructor(
         BehaviorRelay.createDefault(Pair(UiText.DynamicString("") as UiText, false))
     val otpFieldsError: Observable<Pair<UiText, Boolean>> = _otpFieldsError.hide()
 
-    var isCountDownRunning = false
+    private var isCountDownRunning = false
 
     private var countDownTimer: CountDownTimer? = null
 
@@ -136,10 +136,12 @@ class OtpConfirmViewModel @Inject constructor(
                 override fun onFinish() {
                     timerStop()
                 }
-
             }
     }
 
+    /**
+     * Действия выполняемые по окончанию таймера
+     */
     private fun timerStop() {
         _timer.accept(
             Pair(
@@ -149,6 +151,9 @@ class OtpConfirmViewModel @Inject constructor(
         isCountDownRunning = false
     }
 
+    /**
+     * Старт таймера
+     */
     fun startTimer() {
         if (countDownTimer == null) {
             setCountDownTimer()
