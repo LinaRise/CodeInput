@@ -7,10 +7,11 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 import lc.deck.codeinput.ui._global.utils.parcelable
-import lc.deck.codeinput.ui._global.utils.serializable
 import java.util.regex.Pattern
 
-
+/**
+ * Прослушивание смс
+ */
 class SmsCodeReceiver : BroadcastReceiver() {
     interface CodeReceivedListener {
         fun setReceivedCode(code: String)

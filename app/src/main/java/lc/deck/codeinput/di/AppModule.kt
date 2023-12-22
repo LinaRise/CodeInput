@@ -8,14 +8,13 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import lc.deck.codeinput.system.schedulers.AppSchedulers
 import lc.deck.codeinput.system.schedulers.SchedulersProvider
-import java.util.Date
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
 
-    companion object{
+    companion object {
         @Provides
         @Singleton
         fun provideGson(): Gson = with(GsonBuilder()) {

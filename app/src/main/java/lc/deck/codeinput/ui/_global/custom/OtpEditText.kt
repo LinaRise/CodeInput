@@ -21,7 +21,7 @@ import lc.deck.codeinput.ui._global.utils.showKeyboard
 /**
  * View ввод otp
  */
-class CodeEditText constructor(context: Context, attrs: AttributeSet) :
+class OtpEditText constructor(context: Context, attrs: AttributeSet) :
     FrameLayout(context, attrs) {
 
     companion object {
@@ -113,38 +113,38 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
         removeAllViews()
         addView(binding.root)
 
-        val attributes = context.obtainStyledAttributes(attrs, R.styleable.CodeEditText, 0, 0)
+        val attributes = context.obtainStyledAttributes(attrs, R.styleable.OtpEditText, 0, 0)
         try {
             // codeMaskChar
-            attributes.getString(R.styleable.CodeEditText_et_codeMaskChar)?.also {
+            attributes.getString(R.styleable.OtpEditText_et_codeMaskChar)?.also {
                 codeMaskChar = it[0]
             }
 
             // codePlaceholder
-            attributes.getString(R.styleable.CodeEditText_et_codePlaceholder)?.also {
+            attributes.getString(R.styleable.OtpEditText_et_codePlaceholder)?.also {
                 codePlaceholder = it[0]
             }
 
             // inputType
-            if (attributes.hasValue(R.styleable.CodeEditText_android_inputType))
+            if (attributes.hasValue(R.styleable.OtpEditText_android_inputType))
                 binding.etCode.inputType =
-                    attributes.getInt(R.styleable.CodeEditText_android_inputType, 0)
+                    attributes.getInt(R.styleable.OtpEditText_android_inputType, 0)
 
             // maskTheCode
-            if (attributes.hasValue(R.styleable.CodeEditText_et_maskTheCode)) maskTheCode =
-                attributes.getBoolean(R.styleable.CodeEditText_et_maskTheCode, false)
+            if (attributes.hasValue(R.styleable.OtpEditText_et_maskTheCode)) maskTheCode =
+                attributes.getBoolean(R.styleable.OtpEditText_et_maskTheCode, false)
 
             // maxLength
-            maxLength = attributes.getInt(R.styleable.CodeEditText_android_maxLength, maxLength)
+            maxLength = attributes.getInt(R.styleable.OtpEditText_android_maxLength, maxLength)
 
             // scrollDurationInMillis
             scrollDurationInMillis = attributes.getInt(
-                R.styleable.CodeEditText_et_scrollDurationInMillis,
+                R.styleable.OtpEditText_et_scrollDurationInMillis,
                 scrollDurationInMillis
             )
 
             // text
-            attributes.getString(R.styleable.CodeEditText_android_text)?.also { value ->
+            attributes.getString(R.styleable.OtpEditText_android_text)?.also { value ->
                 val cropped = if (value.length > maxLength) value.subSequence(0, maxLength)
                 else value
                 this.editable = cropped.toEditable()
@@ -267,26 +267,26 @@ class CodeEditText constructor(context: Context, attrs: AttributeSet) :
     private fun CharSequence.toEditable(): Editable =
         Editable.Factory.getInstance().newEditable(this)
 
-    fun setErrorMode(isErrorMode: Boolean = false) {
+    private fun setErrorMode(isErrorMode: Boolean = false) {
         binding.apply {
             for (i in 0 until llCode.childCount) {
                 val itemContainer = llCode.getChildAt(i)
 
                 if (isErrorMode) {
                     itemContainer.findViewById<TextView>(R.id.tvCode).setTextColor(
-                        ContextCompat.getColor(this@CodeEditText.context, R.color.red)
+                        ContextCompat.getColor(this@OtpEditText.context, R.color.red)
                     )
 
                     itemContainer.findViewById<View>(R.id.underline).setBackgroundColor(
-                        ContextCompat.getColor(this@CodeEditText.context, R.color.red)
+                        ContextCompat.getColor(this@OtpEditText.context, R.color.red)
                     )
                 } else {
                     itemContainer.findViewById<TextView>(R.id.tvCode).setTextColor(
-                        ContextCompat.getColor(this@CodeEditText.context, R.color.black)
+                        ContextCompat.getColor(this@OtpEditText.context, R.color.black)
                     )
 
                     itemContainer.findViewById<View>(R.id.underline).setBackgroundColor(
-                        ContextCompat.getColor(this@CodeEditText.context, R.color.black)
+                        ContextCompat.getColor(this@OtpEditText.context, R.color.black)
                     )
                 }
             }

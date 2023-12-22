@@ -73,6 +73,7 @@ class OtpConfirmViewModel @Inject constructor(
     fun sendOtpCode(otp: String) {
         if (previousOtpValue != otpValue) {
             sendOtpValue = otpValue
+            setSmsFieldsViewNormal()
             repository.sendOtpCode(otp)
                 .doOnSubscribe { _loading.accept(true) }
                 .doFinally { _loading.accept(false) }

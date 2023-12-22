@@ -30,7 +30,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"http:192.168.10.73:8080/\""
+                "\"http:192.168.30.117:8080/\""
             )
         }
 
@@ -38,7 +38,7 @@ android {
             buildConfigField(
                 "String",
                 "BASE_URL",
-                "\"http:192.168.10.73:8080/\""
+                "\"http:192.168.30.117:8080/\""
             )
         }
     }
@@ -58,6 +58,12 @@ android {
     kapt {
         correctErrorTypes = true
     }
+
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -69,6 +75,8 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation("org.robolectric:robolectric:4.11.1")
+    testImplementation("io.mockk:mockk:1.9")
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.android.gms:play-services-auth-api-phone:18.0.1")

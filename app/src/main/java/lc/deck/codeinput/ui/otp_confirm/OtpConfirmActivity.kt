@@ -42,7 +42,7 @@ class OtpConfirmActivity : BaseActivity() {
                     hideKeyboard()
                     viewModel.sendOtpCode(otpArea.text.toString())
                     otpArea.errorValue = otpArea.errorValue
-                } else if (otpArea.text.length != otpArea.maxLength - 1) {
+                } else if (otpArea.text.length != otpArea.maxLength) {
                     viewModel.setSmsFieldsViewNormal()
                 }
             }
